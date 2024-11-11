@@ -2,7 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule, YuvCoreModule } from '@yuuvis/core';
+import { TranslateModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvFormModule } from '../form/form.module';
@@ -55,7 +55,6 @@ YuvComponentRegister.register(components);
     YuvPipesModule,
     YuvComponentsModule,
     YuvPluginsModule,
-    YuvCoreModule,
     YuvFormModule,
     TranslateModule,
     YuvCommonModule,
