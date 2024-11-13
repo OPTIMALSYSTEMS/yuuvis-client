@@ -129,8 +129,8 @@ export class PluginBpmComponent {
     this.formOptions?.formModel || this.pluginService.get('/resources/config/' + (options?.formName || processDefinitionKey), ApiBase.apiWeb).then((res) => {
       const _options = ConfigService.PARSER(res.data);
       this.formOptions = {
-        formModel: _options?.situation ? _options : _options.formModel || this.formModelWrapper(_options?.elements, options?.formLabel, options?.formLabelKey),
-        data: options?.defaultData || {},
+        formModel: _options?.situation ? _options : _options.formModel || this.formModelWrapper(_options?.elements, options?.formLabel || _options?.formLabel, options?.formLabelKey || _options?.formLabelKey),
+        data: options?.defaultData || _options?.defaultData || {},
         disabled: false
       }
     }).catch(this.handleError);
