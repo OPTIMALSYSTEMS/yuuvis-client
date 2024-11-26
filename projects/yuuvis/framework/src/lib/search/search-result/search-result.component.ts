@@ -187,7 +187,8 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
         takeUntilDestroyed(),
         tap((e) => this.objectEvent(e))
       )
-      .subscribe((e: YuvEvent) => { });
+      .subscribe();
+
   }
 
   private objectEvent({ type, data }: YuvEvent) {
@@ -206,6 +207,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
             this.pagination.pages = Math.ceil(this.totalNumItems / this._searchQuery.size);
           }
         }
+        this.refresh()
       }
     }
   }
@@ -245,9 +247,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
       )
-      .subscribe((res: SearchResult) => {
-        this.createTableData(res);
-      });
+      .subscribe({ next: (res: SearchResult) => { this.createTableData(res) } });
   }
 
   private applyColumnConfiguration(q: SearchQuery): Observable<SearchQuery> {
@@ -285,48 +285,51 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
     // object type of the result list items, if NULL we got a mixed result
     const targetType = this._searchQuery?.targetType;
 
-    (this._columns ? of(this._columns) : this.gridService.getColumnConfiguration(targetType)).subscribe((colDefs: ColDef[]) => {
-      // setup pagination form in case of a paged search result chunk
-      this.pagination = null;
-      if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
-        this.pagination = {
-          pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
-          page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
-        };
+    (this._columns ? of(this._columns) : this.gridService.getColumnConfiguration(targetType))
+      .subscribe({
+        next: (colDefs: ColDef[]) => {
+          // setup pagination form in case of a paged search result chunk
+          this.pagination = null;
+          if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
+            this.pagination = {
+              pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
+              page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
+            };
 
-        this.pagingForm.get('page').setValue(pageNumber);
-        this.pagingForm
-          .get('page')
-          .setValidators([Validators.required, , Validators.pattern('[0-9]+'), Validators.min(1), Validators.max(this.pagination.pages)]);
-      }
+            this.pagingForm.get('page').setValue(pageNumber);
+            this.pagingForm
+              .get('page')
+              .setValidators([Validators.required, , Validators.pattern('[0-9]+'), Validators.min(1), Validators.max(this.pagination.pages)]);
+          }
 
-      // // TODO: setup column width
-      // if (this.options && this.options.columnWidths) {
-      //   colDefs.forEach(col => (col.width = this.options.columnWidths[col.field] || col.width));
-      // }
+          // // TODO: setup column width
+          // if (this.options && this.options.columnWidths) {
+          //   colDefs.forEach(col => (col.width = this.options.columnWidths[col.field] || col.width));
+          // }
 
-      this._columns = colDefs;
-      this._rows = searchResult.items.map((i) => this.getRow(i));
-      const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
+          this._columns = colDefs;
+          this._rows = searchResult.items.map((i) => this.getRow(i));
+          const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
 
-      const setter = this.responsiveTableData?.set || ((t) => t);
-      this.tableData = setter.call(this, {
-        titleField: this.objectTypeBaseProperties.title,
-        descriptionField: this.objectTypeBaseProperties.description,
-        selectType: 'multiple',
-        columns: this._columns,
-        rows: this._rows,
-        sortModel: sortOptions.map((o) => ({
-          colId: o.field,
-          sort: o.order
-        })),
-        ...(this.responsiveTableData || {})
+          const setter = this.responsiveTableData?.set || ((t) => t);
+          this.tableData = setter.call(this, {
+            titleField: this.objectTypeBaseProperties.title,
+            descriptionField: this.objectTypeBaseProperties.description,
+            selectType: 'multiple',
+            columns: this._columns,
+            rows: this._rows,
+            sortModel: sortOptions.map((o) => ({
+              colId: o.field,
+              sort: o.order
+            })),
+            ...(this.responsiveTableData || {})
+          });
+          this.busy = false;
+          setTimeout((_) => {
+            this.setSelection(this._itemsSupposedToBeSelected);
+          }, 0);
+        }
       });
-      this.busy = false;
-      setTimeout((_) => {
-        this.setSelection(this._itemsSupposedToBeSelected);
-      }, 0);
-    });
   }
 
   /**
