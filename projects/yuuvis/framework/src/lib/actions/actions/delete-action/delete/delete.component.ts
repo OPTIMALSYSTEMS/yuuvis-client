@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { BackendService, DmsObject, DmsService, EventService, TranslateService } from '@yuuvis/core';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from '../../../interfaces/action-component.interface';
@@ -13,6 +13,12 @@ import { ActionComponent } from '../../../interfaces/action-component.interface'
   styleUrls: ['./delete.component.scss']
 })
 export class DeleteComponent implements OnInit, ActionComponent {
+
+  readonly #translate = inject(TranslateService);
+  readonly #backend = inject(BackendService);
+  readonly #dmsService = inject(DmsService);
+  readonly #eventService = inject(EventService);
+  readonly #notificationService = inject(NotificationService);
   deleting = false;
   folder = '';
   count = '...';
@@ -23,44 +29,36 @@ export class DeleteComponent implements OnInit, ActionComponent {
 
   @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(
-    private translate: TranslateService,
-    private backend: BackendService,
-    private dmsService: DmsService,
-    private eventService: EventService,
-    private notificationService: NotificationService
-  ) {}
-
   deleteDmsObject(dmsObject: DmsObject) {
-    this.dmsService.deleteDmsObject(dmsObject.id).subscribe(
-      () => {
-        this.notificationService.success(
-          this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.title'),
-          this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.message')
+    this.#dmsService.deleteDmsObject(dmsObject.id).subscribe({
+      next: () => {
+        this.#notificationService.success(
+          this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.title'),
+          this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.message')
         );
-
+        this.#eventService.trigger('dmsObjectDeleted', dmsObject);
         this.finished.emit();
       },
-      (error) => {
+      error: (error) => {
         let status = error.status;
         if (error.error) {
           status = error.error.serviceErrorCode;
         }
         switch (status) {
           case 403:
-            this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.403'));
+            this.#notificationService.error(this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.403'));
             break;
           case 409:
-            this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.409'));
+            this.#notificationService.error(this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.409'));
             break;
           // serviceErrorCode: A non-empty folder cannot be deleted
           case 2800:
-            this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.2800'));
+            this.#notificationService.error(this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.2800'));
             break;
         }
         this.finished.emit();
       }
-    );
+    });
   }
 
   run() {

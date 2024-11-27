@@ -67,6 +67,13 @@ export class PluginBpmComponent {
       .finally(() => this.parent?.onFinish?.());
   }
 
+  /**
+   * Form model wrapper
+   * @param elements 
+   * @param label 
+   * @param labelKey 
+   * @returns 
+   */
   public formModelWrapper(elements?: any[], label?: string, labelKey?: string) {
     return {
       name: 'startform',
@@ -103,31 +110,41 @@ export class PluginBpmComponent {
   }
 
   /**
-   * Creates new BPM process with form
-   * @param component - plugin component
-   * @param formName - form name
+   * Initializes form options
    * @param processDefinitionKey - process definition key
-   * @param variables - process variables
+   * @param options - form options
    * 
    * @ignore
    */
-  public initBpmForm(processDefinitionKey: string, successMessageKey: string, options?: { variables?: any[], formModel?: any, elements?: any[], formName?: string, formLabel?: string, formLabelKey?: string }) {
+  public initFormOptions(processDefinitionKey: string, options?: { variables?: any[], formModel?: any, elements?: any[], formName?: string, formLabel?: string, formLabelKey?: string, defaultData?: any }) {
 
     if (options?.formModel || options?.elements) {
       this.formOptions = {
         formModel: options?.formModel || this.formModelWrapper(options?.elements, options?.formLabel, options?.formLabelKey),
-        data: {},
+        data: options?.defaultData || {},
         disabled: false
       };
     }
 
     this.formOptions?.formModel || this.pluginService.get('/resources/config/' + (options?.formName || processDefinitionKey), ApiBase.apiWeb).then((res) => {
+      const _options = ConfigService.PARSER(res.data);
       this.formOptions = {
-        formModel: ConfigService.PARSER(res.data),
-        data: {},
+        formModel: _options?.situation ? _options : _options.formModel || this.formModelWrapper(_options?.elements, options?.formLabel || _options?.formLabel, options?.formLabelKey || _options?.formLabelKey),
+        data: options?.defaultData || _options?.defaultData || {},
         disabled: false
       }
     }).catch(this.handleError);
+  }
+
+  /**
+   * Initializes BPM form
+   * @param processDefinitionKey 
+   * @param successMessageKey 
+   * @param options 
+   */
+  public initBpmForm(processDefinitionKey: string, successMessageKey: string, options?: any) {
+
+    this.initFormOptions(processDefinitionKey, options);
 
     this.parent.finished.subscribe((event) => {
       const vars = options?.variables?.map((v) => {
