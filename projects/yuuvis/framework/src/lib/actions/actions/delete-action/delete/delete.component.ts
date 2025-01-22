@@ -14,7 +14,7 @@ import { ActionComponent } from '../../../interfaces/action-component.interface'
 })
 export class DeleteComponent implements OnInit, ActionComponent {
 
-  readonly #translate = inject(TranslateService);
+  private readonly translate = inject(TranslateService);
   readonly #backend = inject(BackendService);
   readonly #dmsService = inject(DmsService);
   readonly #eventService = inject(EventService);
@@ -33,8 +33,8 @@ export class DeleteComponent implements OnInit, ActionComponent {
     this.#dmsService.deleteDmsObject(dmsObject.id).subscribe({
       next: () => {
         this.#notificationService.success(
-          this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.title'),
-          this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.message')
+          this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.title'),
+          this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.message')
         );
         this.#eventService.trigger('dmsObjectDeleted', dmsObject);
         this.finished.emit();
@@ -46,14 +46,14 @@ export class DeleteComponent implements OnInit, ActionComponent {
         }
         switch (status) {
           case 403:
-            this.#notificationService.error(this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.403'));
+            this.#notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.403'));
             break;
           case 409:
-            this.#notificationService.error(this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.409'));
+            this.#notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.409'));
             break;
           // serviceErrorCode: A non-empty folder cannot be deleted
           case 2800:
-            this.#notificationService.error(this.#translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.2800'));
+            this.#notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.2800'));
             break;
         }
         this.finished.emit();
