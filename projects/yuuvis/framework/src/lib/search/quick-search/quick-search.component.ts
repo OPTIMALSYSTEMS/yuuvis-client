@@ -215,7 +215,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   private parseQuery(query: string): any {
     const q = (query || '').toLowerCase();
-    const match = q.match(new RegExp(`(.*)(${this.TYPE_FIELDS}|${this.TYPES})([a-zA-Z0-9\- ]*)$`)) || [];
+    const match = q.match(new RegExp(`([^${this.TYPE_FIELDS}|${this.TYPES}]*)([${this.TYPE_FIELDS}|${this.TYPES}]?)([a-zA-Z0-9\- ]*)$`)) || [];
     return { term: match[1], text: match[3], symbol: match[2], isTypeFields: match[2] === this.TYPE_FIELDS, isTypes: match[2] === this.TYPES };
   }
 
