@@ -1,6 +1,25 @@
 @import './../../../../../src/scss-shared/_vars';
 
 body {
+  .p-tabview .p-tabview-nav-btn.p-link {
+    background-color: var(--panel-background-grey);
+    box-shadow: none;
+    border: 0px solid var(--panel-divider-color);
+    border-width: 0 0 0 1px;
+
+    border-radius: 0;
+    width: auto;
+    padding: 0 4px;
+
+    &.p-tabview-nav-prev {
+      border-width: 0 1px 0 0;
+    }
+
+    &:hover {
+      background-color: var(--panel-background-lightgrey);
+    }
+  }
+
   // fix for new svg icons in primeNG
   .p-icon-wrapper {
     display: flex;
