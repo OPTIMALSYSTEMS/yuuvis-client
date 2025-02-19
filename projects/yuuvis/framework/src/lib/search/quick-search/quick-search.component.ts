@@ -324,7 +324,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     if (type === 'type') {
       this.onObjectTypesSelected(res.map((r) => r.value) as ObjectType[]);
     } else if (type === 'filter') {
-      this.onFilterSelected(res[0].value as (SearchFilter | SearchFilterGroup)[]);
+      this.onFilterSelected(res[0].value.value as (SearchFilter | SearchFilterGroup)[]);
     }
     this.onPickerCancel(popoverRef);
   }
