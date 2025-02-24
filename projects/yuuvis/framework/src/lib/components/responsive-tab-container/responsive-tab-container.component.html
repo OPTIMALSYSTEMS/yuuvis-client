@@ -1,20 +1,22 @@
 <as-split (dragEnd)="dragEnd($event)">
   <as-split-area [size]="(_layoutOptions?.panelSizes)[0]">
-    <p-tabView class="yrt-tab" yuvOfflineDisabled="ul" #mainTabView (onChange)="onChange($event)"
-      [ngClass]="{noSplit: disableSplit}" [scrollable]="scrollable">
-      <span yuvOfflineDisabled class="tab-navigation"
-        [title]="'yuv.framework.responsive-tab-container.button.split' | translate">
-        <yuv-icon *ngIf="!(isSmallScreen$ | async)" class="split-btn" (click)="splitPanelAdd()"
-          [icon]="'verticalSplit'"></yuv-icon>
+    <p-tabView
+      class="yrt-tab"
+      yuvOfflineDisabled="ul"
+      #mainTabView
+      (onChange)="onChange($event)"
+      [ngClass]="{ noSplit: disableSplit }"
+      [scrollable]="scrollable"
+    >
+      <span yuvOfflineDisabled class="tab-navigation" [title]="'yuv.framework.responsive-tab-container.button.split' | translate">
+        <yuv-icon *ngIf="!(isSmallScreen$ | async)" class="split-btn" (click)="splitPanelAdd()" [icon]="'verticalSplit'"></yuv-icon>
       </span>
       <ng-content></ng-content>
     </p-tabView>
   </as-split-area>
 
-  <as-split-area *ngFor="let panel of splitPanels; let index = index" class="secondary"
-    [size]="(_layoutOptions?.panelSizes)[index + 1]">
-    <p-tabView yuvOfflineDisabled="ul" class="yrt-tab split-tab-view" #splitTabView [controlClose]="true"
-      (onClose)="splitPanelClose(panel, index)">
+  <as-split-area *ngFor="let panel of splitPanels; let index = index" class="secondary" [size]="(_layoutOptions?.panelSizes)[index + 1]">
+    <p-tabView yuvOfflineDisabled="ul" class="yrt-tab split-tab-view" #splitTabView [controlClose]="true" (onClose)="splitPanelClose(panel, index)">
       <p-tabPanel [id]="pID(panel, '_empty')" [header]="panel.header" [closable]="true"></p-tabPanel>
     </p-tabView>
   </as-split-area>
