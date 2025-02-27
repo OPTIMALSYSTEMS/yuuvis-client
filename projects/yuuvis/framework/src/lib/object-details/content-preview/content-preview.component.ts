@@ -87,15 +87,19 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     tap((status) => (this.loading = typeof status === 'boolean' && !status ? true : false)),
     switchMap((status) => (typeof status === 'boolean' && !status ? of(null) : this.contentPreviewService.previewSrc$.pipe(
       map((src: string) => {
-        const url = new URL(src);
-        const i18n = JSON.stringify({
-          'yuv.viewer.not.authorized': this.translate.instant('yuv.viewer.not.authorized'),
-          'yuv.viewer.not.found': this.translate.instant('yuv.viewer.not.found'),
-          'yuv.viewer.not.supported': this.translate.instant('yuv.viewer.not.supported'),
-          'yuv.viewer.not.supported.download.content': this.translate.instant('yuv.viewer.not.supported.download.content')
-        });
-        url.searchParams.append('i18n', i18n);
-        return url.toString();
+        try {
+          const url = new URL(src);
+          const i18n = JSON.stringify({
+            'yuv.viewer.not.authorized': this.translate.instant('yuv.viewer.not.authorized'),
+            'yuv.viewer.not.found': this.translate.instant('yuv.viewer.not.found'),
+            'yuv.viewer.not.supported': this.translate.instant('yuv.viewer.not.supported'),
+            'yuv.viewer.not.supported.download.content': this.translate.instant('yuv.viewer.not.supported.download.content')
+          });
+          url.searchParams.append('i18n', i18n);
+          return url.toString();
+        } catch (error) {
+          return src;
+        }
       })))))
 
   contentPlugins: Observable<any[]>;
