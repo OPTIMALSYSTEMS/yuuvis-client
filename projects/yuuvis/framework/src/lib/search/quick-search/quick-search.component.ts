@@ -324,7 +324,11 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     if (type === 'type') {
       this.onObjectTypesSelected(res.map((r) => r.value) as ObjectType[]);
     } else if (type === 'filter') {
-      this.onFilterSelected(res[0].value.value as (SearchFilter | SearchFilterGroup)[]);
+      // primeNG autocomplete comes with an event instead of the selected value
+      // so there is a diffence between using the '#' to get a filter or picking it from the 
+      // filter list opened by the picker icon
+      const mappedRes = res.map(r => !!r['originalEvent'] ? r.value : r)
+      this.onFilterSelected(mappedRes[0].value as (SearchFilter | SearchFilterGroup)[]);
     }
     this.onPickerCancel(popoverRef);
   }
