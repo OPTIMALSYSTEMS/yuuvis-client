@@ -37,19 +37,26 @@ export class BpmService {
     followUp: false
   };
 
-  constructor(private backendService: BackendService, private system: SystemService) {}
+  constructor(private backendService: BackendService, private system: SystemService) { }
 
   // called on core init
   init() {
     // check availability of certain workflows
-    this.getAllProcessDefinitions().subscribe((res: ProcessDefinition[]) => {
-      this.availableProcessDefinitions = res;
-      res.forEach((pd) => {
-        if (pd.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
-          this.supports.followUp = true;
+    this.getAllProcessDefinitions().subscribe(
+      {
+        next: (res: ProcessDefinition[]) => {
+          this.availableProcessDefinitions = res;
+          res.forEach((pd) => {
+            if (pd.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+              this.supports.followUp = true;
+            }
+          });
+        },
+        error: (err) => {
+          // catch error to not toast an error in case BPM is not available
         }
-      });
-    });
+      }
+    );
   }
 
   private getAllProcessDefinitions(): Observable<ProcessDefinition[]> {
@@ -67,7 +74,7 @@ export class BpmService {
   }
 
   private getPage(index?: number) {
-    return this.backendService.get(`/bpm/process-definitions?page=${index || 0}`);
+    return this.backendService.get(`/bpm/proscess-definitions?page=${index || 0}`);
   }
 
   getProcesses(url: string, silent = false): Observable<unknown> {
@@ -108,17 +115,17 @@ export class BpmService {
       map((res) =>
         res && res.tasks
           ? res.tasks
-              .map((t) => ({
-                id: t.id,
-                name: this.system.getLocalizedResource(`${t.name}_label`) || t.name,
-                description: t.description,
-                assignee: t.assignee,
-                createTime: new Date(t.createTime),
-                claimTime: new Date(t.claimTime),
-                endTime: new Date(t.endTime)
-              }))
-              .sort(Utils.sortValues('createTime'))
-              .reverse()
+            .map((t) => ({
+              id: t.id,
+              name: this.system.getLocalizedResource(`${t.name}_label`) || t.name,
+              description: t.description,
+              assignee: t.assignee,
+              createTime: new Date(t.createTime),
+              claimTime: new Date(t.claimTime),
+              endTime: new Date(t.endTime)
+            }))
+            .sort(Utils.sortValues('createTime'))
+            .reverse()
           : []
       )
     );
@@ -134,15 +141,15 @@ export class BpmService {
       map((res) =>
         res && res.comments
           ? res.comments
-              .map((c) => ({
-                id: c.id,
-                author: c.author,
-                message: c.message,
-                processInstanceId: c.processInstanceId,
-                time: new Date(c.time),
-                taskId: c.taskId
-              }))
-              .sort(Utils.sortValues('time'), Sort.DESC)
+            .map((c) => ({
+              id: c.id,
+              author: c.author,
+              message: c.message,
+              processInstanceId: c.processInstanceId,
+              time: new Date(c.time),
+              taskId: c.taskId
+            }))
+            .sort(Utils.sortValues('time'), Sort.DESC)
           : []
       )
     );
