@@ -406,6 +406,5 @@
 	"yuv.viewer.not.authorized": "Keine Berechtigung zur vorschau der Datei.",
 	"yuv.viewer.not.found": "Die Datei konnte nicht geladen werden.",
 	"yuv.viewer.not.supported": "Nicht unterstütztes Format.",
-	"yuv.viewer.not.supported.download.content":
-	  "Das Format kann nicht angezeigt werden.\nSie können die Datei mit einem Klick auf diesen Link herunterladen."
+	"yuv.viewer.not.supported.download.content": "Das Format kann nicht angezeigt werden.\nSie können die Datei mit einem Klick auf diesen Link herunterladen."
 }

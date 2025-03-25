@@ -573,5 +573,9 @@
   "yuv.state.retentions.renderer.d": "Tag(e)",
   "yuv.state.retentions.renderer.h": "Stunde(n)",
   "yuv.state.retentions.renderer.m": "Monat(e)",
-  "yuv.state.retentions.renderer.y": "Jahr(e)"
+  "yuv.state.retentions.renderer.y": "Jahr(e)",
+  "yuv.viewer.not.authorized": "Keine Berechtigung zur vorschau der Datei.",
+  "yuv.viewer.not.found": "Die Datei konnte nicht geladen werden.",
+  "yuv.viewer.not.supported": "Nicht unterstütztes Format.",
+  "yuv.viewer.not.supported.download.content": "Das Format kann nicht angezeigt werden.\nSie können die Datei mit einem Klick auf diesen Link herunterladen."
 }
