@@ -402,5 +402,10 @@
 	"yuv.framework.upload-progress-overlay.remove-all": "Alle entfernen",
 	"yuv.framework.upload-progress-overlay.title": "Hinzufügestatus",
 	"yuv.framework.version-list.edit": "Aktuelle Version öffnen",
-	"yuv.framework.version-list.title": "Versionen"
+	"yuv.framework.version-list.title": "Versionen",
+	"yuv.viewer.not.authorized": "Keine Berechtigung zur vorschau der Datei.",
+	"yuv.viewer.not.found": "Die Datei konnte nicht geladen werden.",
+	"yuv.viewer.not.supported": "Nicht unterstütztes Format.",
+	"yuv.viewer.not.supported.download.content":
+	  "Das Format kann nicht angezeigt werden.\nSie können die Datei mit einem Klick auf diesen Link herunterladen."
 }
