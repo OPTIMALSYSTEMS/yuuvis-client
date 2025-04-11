@@ -233,7 +233,7 @@ export class ObjectDetailsComponent implements OnDestroy, OnInit {
 
 
   get indexDataFormDisabled(): boolean {
-    return !!this.retentionEndDate
+    return false;
   }
 
   constructor(
