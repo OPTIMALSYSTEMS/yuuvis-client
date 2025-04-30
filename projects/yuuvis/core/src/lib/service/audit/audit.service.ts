@@ -51,7 +51,7 @@ export class AuditService {
   /**
    * @ignore
    */
-  constructor(private searchService: SearchService, private system: SystemService, private userService: UserService) {}
+  constructor(private searchService: SearchService, private system: SystemService, private userService: UserService) { }
 
   /**
    * Get audit entries of a dms object
@@ -77,7 +77,7 @@ export class AuditService {
         new SearchFilter(
           AuditField.ACTION,
           SearchFilter.OPERATOR.IN,
-          auditActions.filter((a) => !tagAudits.includes(a))
+          auditActions.filter((a) => !tagAudits.includes(a)).map(a => `${a}`)
         )
       ]);
 
@@ -107,21 +107,21 @@ export class AuditService {
 
       const actionsFilter = options.actions?.length
         ? new SearchFilter(
-            AuditField.ACTION,
-            SearchFilter.OPERATOR.IN,
-            options.actions.map((a) => a.toString())
-          )
+          AuditField.ACTION,
+          SearchFilter.OPERATOR.IN,
+          options.actions.map((a) => a.toString())
+        )
         : null;
       // TODO: Make this a group and add condition of action=10000 to not mess with subsctions of tags
       const customActionsFilterGroup = options.customActions?.length
         ? new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.AND, [
-            new SearchFilter(
-              AuditField.SUBACTION,
-              SearchFilter.OPERATOR.IN,
-              options.customActions.map((a) => a.toString())
-            ),
-            new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.EEQUAL, 10000)
-          ])
+          new SearchFilter(
+            AuditField.SUBACTION,
+            SearchFilter.OPERATOR.IN,
+            options.customActions.map((a) => a.toString())
+          ),
+          new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.EEQUAL, 10000)
+        ])
         : null;
 
       if (actionsFilter && customActionsFilterGroup) {
