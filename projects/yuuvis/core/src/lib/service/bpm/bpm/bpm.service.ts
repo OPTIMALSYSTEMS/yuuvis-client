@@ -74,7 +74,7 @@ export class BpmService {
   }
 
   private getPage(index?: number) {
-    return this.backendService.get(`/bpm/proscess-definitions?page=${index || 0}`);
+    return this.backendService.get(`/bpm/process-definitions?page=${index || 0}`);
   }
 
   getProcesses(url: string, silent = false): Observable<unknown> {
