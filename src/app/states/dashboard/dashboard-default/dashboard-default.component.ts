@@ -2,6 +2,7 @@ import { Component, HostBinding, HostListener, OnInit, ViewChild } from '@angula
 import { NavigationExtras, Router } from '@angular/router';
 
 import {
+  ConfigService,
   EventService,
   GroupedSelectComponent,
   ObjectTypeAggregation,
@@ -50,6 +51,7 @@ export class DashboardDefaultComponent implements OnInit {
     private frameService: FrameService,
     private appSearch: AppSearchService,
     private eventService: EventService,
+    private configService: ConfigService,
     private systemService: SystemService
   ) {
     this.userService.user$.subscribe((user: YuvUser) => {
@@ -117,6 +119,6 @@ export class DashboardDefaultComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.appQuery = new SearchQuery();
+    this.appQuery = new SearchQuery({ size: this.configService.get('core.gridOptions.pageSize') });
   }
 }
