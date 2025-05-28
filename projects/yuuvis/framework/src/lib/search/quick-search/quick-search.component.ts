@@ -16,6 +16,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {
   AggregateResult,
   BaseObjectTypeField,
+  ConfigService,
   DeviceService,
   ObjectType,
   SearchFilter,
@@ -76,7 +77,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   searchHasResults: boolean = true;
   settingUpQuery: boolean;
   searchWithinContext: boolean = true;
-  searchQuery: SearchQuery = new SearchQuery();
+  searchQuery: SearchQuery = new SearchQuery({ size: this.configService.get('core.gridOptions.pageSize') });
   autoSuggestions = [];
   autoSelectTimer: any;
 
@@ -175,6 +176,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private device: DeviceService,
     private notify: NotificationService,
     private searchService: SearchService,
+    private configService: ConfigService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([arrowDown, filter, search, clear, reset]);
