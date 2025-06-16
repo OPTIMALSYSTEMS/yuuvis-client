@@ -87,6 +87,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     tap((status) => (this.loading = typeof status === 'boolean' && !status ? true : false)),
     switchMap((status) => (typeof status === 'boolean' && !status ? of(null) : this.contentPreviewService.previewSrc$.pipe(
       map((src: string) => {
+        if (src.includes('/dashlet365/')) return src; // do not modify src for dashlet365
         try {
           const url = new URL(src);
           const i18n = JSON.stringify({
