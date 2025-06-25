@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -597,8 +598,8 @@ export class ObjectCreateComponent implements OnDestroy {
               .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
               .pipe(map((_) => dmsObject.id)) : of(dmsObject.id)
           ),
-          catchError((e) => {
-            return of(null);
+          catchError((e: HttpErrorResponse) => {
+            throw new Error(e.message)
           })
         )
       )
