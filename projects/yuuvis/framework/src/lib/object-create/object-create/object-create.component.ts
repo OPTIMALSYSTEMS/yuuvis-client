@@ -22,6 +22,7 @@ import {
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
@@ -597,9 +598,10 @@ export class ObjectCreateComponent implements OnDestroy {
               .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
               .pipe(map((_) => dmsObject.id)) : of(dmsObject.id)
           ),
-          catchError((e) => {
-            return of(null);
+          catchError((e: HttpErrorResponse) => {
+            throw new Error(e.message)
           })
+
         )
       )
     );
