@@ -23,7 +23,6 @@ import {
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 
-import { HttpErrorResponse } from '@angular/common/http';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
