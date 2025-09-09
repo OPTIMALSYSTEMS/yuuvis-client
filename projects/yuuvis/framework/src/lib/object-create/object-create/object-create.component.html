@@ -20,8 +20,6 @@
     <!-- status indicator -->
     <section class="status-indicator">
       <div class="context" *ngIf="context">
-        <pre>{{ context | json }}</pre>
-
         <yuv-icon icon="clear" (click)="removeContext()"></yuv-icon>
         {{ 'yuv.framework.object-create.status.context' | translate : { title: context.title } }}
       </div>
