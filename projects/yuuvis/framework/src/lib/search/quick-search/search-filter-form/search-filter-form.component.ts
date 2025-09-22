@@ -238,6 +238,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   }
 
   private focusLastExtrasField() {
+    if (!this.extrasForm) return;
     const focusables = this.extrasForm.nativeElement.querySelectorAll('input, textarea');
     if (focusables.length) {
       focusables[focusables.length - 1].focus();
