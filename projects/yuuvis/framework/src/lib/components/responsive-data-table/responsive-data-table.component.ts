@@ -92,6 +92,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       .loadLayoutOptions(lok, 'yuv-responsive-data-table')
       .pipe(
         map((o: ResponsiveDataTableOptions) => {
+          console.log('lok', lok);
           this._layoutOptions = o || {};
           this.applyGridOption(true);
         })
@@ -256,8 +257,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
             width: columnState.width
           }))
         });
+
         this._layoutOptions = {
-          columnWidths: Utils.arrayToObject(this.api.getColumnState(), 'colId', 'width')
+          columnWidths: { ...this._layoutOptions.columnWidths, ...Utils.arrayToObject(this.api.getColumnState(), 'colId', 'width') }
         };
         this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', { ...this._layoutOptions }).subscribe();
       }
