@@ -92,7 +92,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       .loadLayoutOptions(lok, 'yuv-responsive-data-table')
       .pipe(
         map((o: ResponsiveDataTableOptions) => {
-          console.log('lok', lok);
           this._layoutOptions = o || {};
           this.applyGridOption(true);
         })
