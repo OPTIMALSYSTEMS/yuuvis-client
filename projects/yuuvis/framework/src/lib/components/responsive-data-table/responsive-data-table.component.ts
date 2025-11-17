@@ -257,7 +257,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
           }))
         });
         this._layoutOptions = {
-          columnWidths: Utils.arrayToObject(this.api.getColumnState(), 'colId', 'width')
+          columnWidths: { ...this._layoutOptions.columnWidths, ...Utils.arrayToObject(this.api.getColumnState(), 'colId', 'width') }
         };
         this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', { ...this._layoutOptions }).subscribe();
       }
